@@ -1,42 +1,100 @@
-public class QuickSortLomuto {
+import turtle
+import random
+import time
 
-    public static void quickSort(int[] a, int low, int high) {
-        if (low < high) {
-            int pivotIndex = partition(a, low, high);
-            quickSort(a, low, pivotIndex - 1);
-            quickSort(a, pivotIndex + 1, high);
-        }
-    }
+# Ustawienia okna
+screen = turtle.Screen()
+screen.title("Wyścig żółwi")
+screen.bgcolor("white")
 
-    public static int partition(int[] a, int low, int high) {
-        int pivot = a[high];                 // element osiowy (ostatni element)
-        int i = low - 1;                     // wskaźnik elementów mniejszych od pivota
-        
-        for (int j = low; j < high; j++) {
-            if (a[j] <= pivot) {
-                i = i + 1;
-                swap(a, i, j);
-            }
-        }
-            
-        swap(a, i + 1, high);                // umieszczenie pivota na właściwym miejscu
-        return i + 1;
-    }
+# Linia mety
+meta = turtle.Turtle()
+meta.hideturtle()
+meta.penup()
+meta.goto(250, 200)
+meta.pendown()
+meta.goto(250, -200)
 
-    private static void swap(int[] a, int i, int j) {
-        int temp = a[i];
-        a[i] = a[j];
-        a[j] = temp;
-    }
+# Informacje o typowaniu
+wyniki = turtle.Turtle()
+wyniki.hideturtle()
+wyniki.penup()
+wyniki.goto(-250, 220)
 
-    // Przykład użycia
-    public static void main(String[] args) {
-        int[] arr = {10, 7, 8, 9, 1, 5};
-        quickSort(arr, 0, arr.length - 1);
-        
-        System.out.print("Posortowana tablica: ");
-        for (int num : arr) {
-            System.out.print(num + " ");
-        }
-    }
-}
+# Kolory i żółwie
+kolory = ["red", "blue", "green", "orange"]
+zolwie = []
+
+for i in range(len(kolory)):
+    zolw = turtle.Turtle()
+    zolw.shape("turtle")
+    zolw.color(kolory[i])
+    zolw.pensize(3)
+    zolw.penup()
+    zolw.goto(-250, 120 - i * 80)
+    zolw.pendown()
+    zolwie.append(zolw)
+
+# Statystyki typowania
+poprawne = 0
+niepoprawne = 0
+
+# Wybór zwycięzcy
+wybor = screen.textinput(
+    "Typowanie",
+    "Wybierz zwycięzcę: red, blue, green lub orange"
+)
+
+if wybor is None:
+    wybor = ""
+
+wybor = wybor.lower().strip()
+
+while wybor not in kolory:
+    wybor = screen.textinput(
+        "Błędny wybór",
+        "Wpisz: red, blue, green lub orange"
+    )
+    if wybor is None:
+        wybor = ""
+    wybor = wybor.lower().strip()
+
+wyniki.write(
+    "Twój typ: " + wybor,
+    font=("Arial", 14, "bold")
+)
+
+time.sleep(2)
+
+# Wyścig
+zwyciezca = None
+
+while zwyciezca is None:
+    for i in range(len(zolwie)):
+        ruch = random.randint(1, 20)
+        zolwie[i].forward(ruch)
+
+        if zolwie[i].xcor() >= 250:
+            zwyciezca = kolory[i]
+            break
+
+# Sprawdzenie typowania
+wyniki.clear()
+
+if wybor == zwyciezca:
+    poprawne += 1
+    trafnosc = "TRAFIONE!"
+else:
+    niepoprawne += 1
+    trafnosc = "NIETRAFIONE!"
+
+wyniki.write(
+    "Twój typ: " + wybor
+    + "\nZwycięzca: " + zwyciezca
+    + "\n" + trafnosc
+    + "\nPoprawne typowania: " + str(poprawne)
+    + "\nNiepoprawne typowania: " + str(niepoprawne),
+    font=("Arial", 12, "bold")
+)
+
+turtle.mainloop()
