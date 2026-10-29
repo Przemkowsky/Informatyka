@@ -1,98 +1,122 @@
 import turtle
-import random
 import time
+import random
 
-# Ustawienia okna
-screen = turtle.Screen()
-screen.title("Wyścig żółwi")
-screen.bgcolor("white")
+turtle.bgcolor("white")
+turtle.title("Wyścig żółwi")
 
-# Linia mety
+# Meta
 meta = turtle.Turtle()
 meta.hideturtle()
 meta.penup()
-meta.goto(250, 200)
+meta.goto(300, 200)
 meta.pendown()
-meta.goto(250, -200)
+meta.goto(300, -200)
 
-# Informacje o typowaniu
-wyniki = turtle.Turtle()
-wyniki.hideturtle()
-wyniki.penup()
-wyniki.goto(-250, 220)
+meta.penup()
+meta.goto(240, 220)
+meta.write("META", font=("Arial", 15, "bold"))
 
-# Kolory i żółwie
-kolory = ["red", "blue", "green", "orange"]
+# Żółwie
+kolory = ["red", "blue", "green", "yellow"]
+
 zolwie = []
 
-for i in range(len(kolory)):
+for i in range(4):
     zolw = turtle.Turtle()
     zolw.shape("turtle")
     zolw.color(kolory[i])
-    zolw.pensize(3)
+    zolw.pensize(7)
     zolw.penup()
-    zolw.goto(-250, 120 - i * 80)
+    zolw.goto(-200, 150 - i * 100)
     zolw.pendown()
     zolwie.append(zolw)
 
-# Statystyki typowania
-poprawne = 0
-niepoprawne = 0
-
 # Wybór zwycięzcy
-wybor = screen.textinput(
-    "Typowanie",
-    "Wybierz zwycięzcę: red, blue, green lub orange"
+wybor = turtle.textinput(
+    "Wyścig żółwi",
+    "Wybierz zwycięzcę: red, blue, green lub yellow"
 )
-
-if wybor is None:
-    wybor = ""
-
-wybor = wybor.lower().strip()
 
 while wybor not in kolory:
-    wybor = screen.textinput(
-        "Błędny wybór",
-        "Wpisz: red, blue, green lub orange"
+    wybor = turtle.textinput(
+        "Błąd",
+        "Wpisz: red, blue, green lub yellow"
     )
-    if wybor is None:
-        wybor = ""
-    wybor = wybor.lower().strip()
 
-wyniki.write(
-    "Twój typ: " + wybor,
-    font=("Arial", 14, "bold")
-)
+# Informacja o typowaniu
+info = turtle.Turtle()
+info.hideturtle()
+info.penup()
+info.goto(-280, 220)
+info.write("Twój typ: " + wybor, font=("Arial", 12, "bold"))
 
-time.sleep(2)
+# Odliczanie
+odliczanie = turtle.Turtle()
+odliczanie.hideturtle()
+odliczanie.penup()
+odliczanie.goto(-50, 200)
+
+for x in range(3):
+    odliczanie.write(
+        3 - x, font=("Arial", 30, "bold")
+    )
+    time.sleep(1)
+    odliczanie.clear()
+
+odliczanie.write("START!", font=("Arial", 25, "bold"))
+time.sleep(1)
+odliczanie.clear()
+
+# Sprawdzanie zwycięzcy
+def sprawdz():
+    for i in range(len(zolwie)):
+        if zolwie[i].position()[0] >= 300:
+            return kolory[i]
+    return None
 
 # Wyścig
+first = random.randint(0, 3)
 zwyciezca = None
 
 while zwyciezca is None:
-    for i in range(len(zolwie)):
-        ruch = random.randint(1, 20)
-        zolwie[i].forward(ruch)
+    for i in range(4):
+        nr = (first + i) % 4
+        zolwie[nr].forward(random.randint(0, 70))
 
-        if zolwie[i].xcor() >= 250:
-            zwyciezca = kolory[i]
+        zwyciezca = sprawdz()
+
+        if zwyciezca is not None:
             break
 
-# Sprawdzenie typowania
-wyniki.clear()
+    first = (first + 1) % 4
+    time.sleep(0.1)
+
+# Wynik typowania
+if wybor == zwyciezca:
+    trafnosc = "TRAFIONE!"
+else:
+    trafnosc = "NIETRAFIONE!"
+
+info.goto(-280, 180)
+info.write(
+    "\nZwycięzca: " + zwyciezca
+    + "\n" + trafnosc,
+    font=("Arial", 12, "bold")
+)
+
+# Suma typowań
+poprawne = 0
+niepoprawne = 0
 
 if wybor == zwyciezca:
     poprawne += 1
-    trafnosc = "TRAFIONE!"
 else:
     niepoprawne += 1
-    trafnosc = "NIETRAFIONE!"
 
-wyniki.write(
-    "Twój typ: " + wybor
-    + "\nZwycięzca: " + zwyciezca
-    + "\n" + trafnosc
-    + "\nPoprawne typowania: " + str(poprawne)
+info.goto(-280, 100)
+info.write(
+    "\nPoprawne typowania: " + str(poprawne)
     + "\nNiepoprawne typowania: " + str(niepoprawne),
     font=("Arial", 12, "bold")
 )
